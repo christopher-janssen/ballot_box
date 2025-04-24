@@ -1,0 +1,811 @@
+---
+title: CCES Data Preprocessing
+author: "Christopher Janssen"
+date: last-modified
+editor_options: 
+  chunk_output_type: console
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+# Dataset Preparation
+
+This document prepares the CCES dataset for analysis in the research study "From Headlines to Ballot Lines: Media's Role in Shaping Political Knowledge and Voter Choice." 
+
+The processed data will be saved and imported into the main analysis manuscript.
+
+## Setup and Data Import
+
+```{r}
+#| label: setup
+#| cache: false
+
+# Load required packages
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+# Set visual theme
+theme_set(theme_bw())
+options(tibble.width = Inf, dplyr.print_max = 30)
+
+# Set data path
+path_data <- "../data"
+```
+
+We begin by importing the CCES dataset and selecting only the variables needed for our analysis.
+
+```{r}
+#| label: data-import
+#| cache: true
+
+# Import full CCES dataset
+cces_full <- haven::read_dta(here::here(path_data, "CCES24_Common.dta"), encoding = "UTF-8")
+
+# Select only the variables needed for analysis
+cces_selected <- cces_full |>
+  select(
+    # ID and weights
+    caseid, commonweight, commonpostweight,
+    
+    # Political knowledge variables
+    CC24_310a, CC24_310b, CC24_310c, CC24_310d,  # Party control knowledge
+    CC24_311a, CC24_311b, CC24_311c, CC24_311d,  # Representative party knowledge
+    
+    # Correct party information (for scoring knowledge)
+    CurrentHouseParty, CurrentSen1Party, CurrentSen2Party, CurrentGovParty,
+    
+    # Information sources
+    starts_with("CC24_300_"),      # Media use types
+    CC24_300a, CC24_300c,          # TV and newspaper type
+    starts_with("CC24_300b_"),     # Media networks
+    starts_with("CC24_300d_"),     # Social media political use
+    newsint,                       # News interest
+    
+    # Voting behavior
+    CC24_401, votereg,             # Voting and registration
+    CC24_410, CC24_411, CC24_412, CC24_413,  # Vote choice
+    starts_with("CC24_430a_"),     # Political participation
+    
+    # Demographics and controls
+    educ, birthyr, pid7, faminc_new, race, hispanic, 
+    gender4, urbancity, inputstate
+  )
+```
+
+## Missing Data Assessment
+
+Next, we examine the dataset for missing values to understand potential limitations.
+
+```{r}
+#| label: missing-data
+
+# Check for missing values in the dataset
+missing_summary <- cces_selected |>
+  summarise(across(everything(), ~sum(is.na(.)))) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "missing_count") |>
+  arrange(desc(missing_count))
+
+# Display variables with missing values
+kable(missing_summary |> filter(missing_count > 0) |> head(10),
+      caption = "Top 10 Variables with Missing Values") |>
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Political Knowledge Variables
+
+We create indicators for correct political knowledge and a composite index.
+
+```{r}
+#| label: knowledge-variables
+
+# Create political knowledge indicators and index
+cces_clean <- cces_selected |>
+  mutate(
+    # Knowledge of which party controls government bodies (1 = correct, 0 = incorrect)
+    knowledge_house = ifelse(CC24_310a == 1, 1, 0),  # 1 = Republicans for House
+    knowledge_senate = ifelse(CC24_310b == 2, 1, 0), # 2 = Democrats for Senate
+    
+    # Knowledge of representatives' parties (1 = correct, 0 = incorrect)
+    knowledge_house_rep = case_when(
+      CurrentHouseParty == "Republican" & CC24_311d == 2 ~ 1,
+      CurrentHouseParty == "Democrat" & CC24_311d == 3 ~ 1,
+      TRUE ~ 0
+    ),
+    knowledge_senate1 = case_when(
+      CurrentSen1Party == "Republican" & CC24_311b == 2 ~ 1,
+      CurrentSen1Party == "Democrat" & CC24_311b == 3 ~ 1,
+      TRUE ~ 0
+    ),
+    knowledge_senate2 = case_when(
+      CurrentSen2Party == "Republican" & CC24_311c == 2 ~ 1,
+      CurrentSen2Party == "Democrat" & CC24_311c == 3 ~ 1,
+      TRUE ~ 0
+    ),
+    knowledge_governor = case_when(
+      CurrentGovParty == "Republican" & CC24_311a == 2 ~ 1,
+      CurrentGovParty == "Democrat" & CC24_311a == 3 ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Political knowledge index (sum of correct answers, range 0-6)
+    political_knowledge_index = knowledge_house + knowledge_senate + 
+                              knowledge_house_rep + knowledge_senate1 + 
+                              knowledge_senate2 + knowledge_governor
+  )
+```
+
+## Media and Information Source Variables
+
+We create variables for media use, preferences, and engagement.
+
+```{r}
+#| label: media-use-indicators
+
+# Create indicators for media use types
+cces_clean <- cces_clean |>
+  mutate(
+    # Binary indicators for media use (1 = uses this source, 0 = does not use)
+    uses_social_media = ifelse(CC24_300_1 == 1, 1, 0),
+    uses_tv_news = ifelse(CC24_300_2 == 1, 1, 0),
+    uses_newspaper = ifelse(CC24_300_3 == 1, 1, 0),
+    uses_radio_news = ifelse(CC24_300_4 == 1, 1, 0),
+    uses_no_media = ifelse(CC24_300_5 == 1, 1, 0),
+    
+    # Media diversity index (count of different media types used, range 0-4)
+    media_diversity_index = uses_social_media + uses_tv_news + 
+                          uses_newspaper + uses_radio_news
+  )
+
+# Create indicators for news network preferences
+cces_clean <- cces_clean |>
+  mutate(
+    # Network categories (1 = watches this type, 0 = does not watch)
+    watches_mainstream = ifelse(CC24_300b_1 == 1 | CC24_300b_2 == 1 | 
+                               CC24_300b_3 == 1 | CC24_300b_7 == 1, 1, 0),
+    watches_cnn_msnbc = ifelse(CC24_300b_4 == 1 | CC24_300b_6 == 1, 1, 0),
+    watches_fox_news = ifelse(CC24_300b_5 == 1, 1, 0)
+  )
+```
+
+We also create a social media political engagement index for those who use social media.
+
+```{r}
+#| label: social-media-engagement
+
+# Create social media political engagement index
+cces_clean <- cces_clean |>
+  mutate(
+    # Only count social media engagement for those who use social media
+    social_media_engagement_index = ifelse(uses_social_media == 1, 
+                                    (ifelse(CC24_300d_1 == 1, 1, 0) + 
+                                     ifelse(CC24_300d_2 == 1, 1, 0) + 
+                                     ifelse(CC24_300d_3 == 1, 1, 0) + 
+                                     ifelse(CC24_300d_4 == 1, 1, 0) + 
+                                     ifelse(CC24_300d_5 == 1, 1, 0)),
+                                    0)
+  )
+```
+
+Based on media use patterns, we create a primary news source variable.
+
+```{r}
+#| label: primary-news-source
+
+# Create primary news source variable
+cces_clean <- cces_clean |>
+  mutate(
+    primary_news_source = case_when(
+      uses_social_media == 1 & social_media_engagement_index >= 3 ~ "Social Media (High Engagement)",
+      uses_social_media == 1 & social_media_engagement_index < 3 ~ "Social Media (Low Engagement)",
+      watches_fox_news == 1 ~ "Fox News",
+      watches_cnn_msnbc == 1 ~ "CNN/MSNBC",
+      watches_mainstream == 1 ~ "Mainstream Networks",
+      uses_newspaper == 1 & uses_tv_news == 0 ~ "Newspaper",
+      uses_tv_news == 1 ~ "TV News",
+      uses_radio_news == 1 ~ "Radio News",
+      uses_no_media == 1 ~ "No Media",
+      TRUE ~ "Multiple/Other"
+    ),
+    
+    # Primary news source as factor with meaningful order
+    primary_news_source = factor(
+      primary_news_source,
+      levels = c(
+        "Social Media (High Engagement)",
+        "Social Media (Low Engagement)",
+        "Fox News", 
+        "CNN/MSNBC", 
+        "Mainstream Networks",
+        "TV News", 
+        "Newspaper", 
+        "Radio News",
+        "No Media",
+        "Multiple/Other"
+      )
+    )
+  )
+```
+
+We create a broader news source type category for more general analysis.
+
+```{r}
+#| label: news-source-type
+
+# Create broader news source type category
+cces_clean <- cces_clean |>
+  mutate(
+    news_source_type = case_when(
+      primary_news_source %in% c("Social Media (High Engagement)", 
+                                "Social Media (Low Engagement)") ~ "Digital",
+      primary_news_source %in% c("Fox News", "CNN/MSNBC") ~ "Cable News",
+      primary_news_source %in% c("Mainstream Networks", "TV News") ~ "Broadcast TV",
+      primary_news_source %in% c("Newspaper", "Radio News") ~ "Traditional Media",
+      primary_news_source %in% c("No Media", "Multiple/Other") ~ "Other/None"
+    ),
+    
+    # News source type as factor with meaningful order
+    news_source_type = factor(
+      news_source_type,
+      levels = c("Digital", "Cable News", "Broadcast TV", "Traditional Media", "Other/None")
+    )
+  )
+```
+
+We recode news interest to a more intuitive scale where higher values indicate more interest.
+
+```{r}
+#| label: news-interest
+
+# Recode news interest to more intuitive scale (higher = more interest)
+cces_clean <- cces_clean |>
+  mutate(
+    news_interest = case_when(
+      newsint == 1 ~ 4,
+      newsint == 2 ~ 3,
+      newsint == 3 ~ 2,
+      newsint == 4 ~ 1,
+      TRUE ~ NA_real_
+    )
+  )
+```
+
+## Demographic and Control Variables
+
+We process demographic variables for use in our analysis.
+
+```{r}
+#| label: demographic-variables
+
+cces_clean <- cces_clean |>
+  mutate(
+    # Convert education to numeric
+    education_level = as.numeric(educ),
+    
+    # Create age variable
+    age = 2024 - as.numeric(birthyr),
+    
+    # Convert income to numeric
+    income_level = as.numeric(faminc_new),
+    
+    # Create binary voted variable
+    voted = ifelse(CC24_401 == 5, 1, 0),  # 5 = "I definitely voted"
+    
+    # Create party ID factor
+    pid7_factor = factor(pid7,
+                        levels = c(1, 2, 3, 4, 5, 6, 7),
+                        labels = c("Strong Democrat", 
+                                  "Moderate Democrat",
+                                  "Lean Democrat",
+                                  "Independent",
+                                  "Lean Republican",
+                                  "Moderate Republican",
+                                  "Strong Republican"),
+                        ordered = TRUE)
+  )
+```
+
+## Standardized Variables for Analysis
+
+We create standardized versions of key variables for use in our statistical models.
+
+```{r}
+#| label: standardized-variables
+
+# Create standardized versions of key variables
+cces_clean <- cces_clean |>
+  mutate(
+    political_knowledge_std = scale(political_knowledge_index),
+    media_diversity_std = scale(media_diversity_index),
+    social_media_engagement_std = scale(social_media_engagement_index),
+    news_interest_std = scale(news_interest)
+  )
+```
+
+## Information Source Diversity
+
+We create a variable to capture the diversity of information sources used.
+
+```{r}
+#| label: source-diversity
+
+# Create information source diversity variable
+cces_clean <- cces_clean |>
+  mutate(
+    # Count the number of media sources used (where 1 = selected)
+    source_diversity_count = (uses_social_media == 1) + 
+                             (uses_tv_news == 1) + 
+                             (uses_newspaper == 1) + 
+                             (uses_radio_news == 1),
+    # Create a categorical version
+    source_diversity = case_when(
+      source_diversity_count == 0 ~ "None",
+      source_diversity_count == 1 ~ "Single Source",
+      source_diversity_count == 2 ~ "Two Sources",
+      source_diversity_count >= 3 ~ "Three+ Sources"
+    ),
+    # Make it an ordered factor
+    source_diversity = factor(source_diversity, 
+                             levels = c("None", "Single Source", "Two Sources", "Three+ Sources"),
+                             ordered = TRUE)
+  )
+```
+
+## Final Dataset Preparation
+
+We create a final analysis dataset with all necessary variables.
+
+```{r}
+#| label: final-dataset
+
+# Create final analysis dataset
+cces_final <- cces_clean |>
+  # Select variables for final dataset
+  select(
+    # ID and weights
+    caseid, commonweight, commonpostweight,
+    
+    # Created knowledge variables
+    knowledge_house, knowledge_senate, knowledge_house_rep, 
+    knowledge_senate1, knowledge_senate2, knowledge_governor,
+    political_knowledge_index, political_knowledge_std,
+    
+    # Created media variables
+    uses_social_media, uses_tv_news, uses_newspaper, uses_radio_news, uses_no_media,
+    watches_mainstream, watches_cnn_msnbc, watches_fox_news,
+    media_diversity_index, media_diversity_std,
+    social_media_engagement_index, social_media_engagement_std,
+    primary_news_source, news_source_type,
+    news_interest, news_interest_std,
+    
+    # Source diversity
+    source_diversity_count, source_diversity,
+    
+    # Demographics and controls
+    education_level, age, income_level, 
+    gender4, race, hispanic, urbancity, inputstate, pid7, pid7_factor,
+    
+    # Outcome variables
+    voted, CC24_410, CC24_411, CC24_412, CC24_413
+  )
+
+# Quick check of the final dataset structure
+glimpse(cces_final)
+```
+
+## Save Processed Data
+
+Finally, we save the processed dataset for use in the main analysis.
+
+```{r}
+#| label: save-data
+
+# Save the processed dataset
+saveRDS(cces_final, file = here::here(path_data, "cces_processed.rds"))
+```
+
+# Data Dictionary
+
+This section provides a comprehensive data dictionary documenting all variables used in the analysis, including both original CCES variables and derived measures.
+
+## Identifiers and Weights
+
+```{r}
+#| label: tbl-identifiers
+#| tbl-cap: "Variable identifiers and weights"
+
+# Create data frame for identifiers and weights
+identifiers_df <- data.frame(
+  Variable_Name = c("caseid", "commonweight", "commonpostweight"),
+  Description = c("Unique identifier for each respondent", 
+                  "Weight for full sample", 
+                  "Post-election weight"),
+  Type = c("Character", "Numeric", "Numeric"),
+  Values = c("Unique strings", "Continuous values", "Continuous values"),
+  Source = c("Original CCES", "Original CCES", "Original CCES")
+)
+
+identifiers_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Source"),
+        align = c("l", "l", "l", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+## Political Knowledge Variables
+
+### Original CCES Knowledge Variables
+
+```{r}
+#| label: tbl-original-knowledge
+#| tbl-cap: "Original CCES Knowledge Variables"
+
+# Create data frame for original knowledge variables
+original_knowledge_df <- data.frame(
+  Variable_Name = c("CC24_310a", "CC24_310b", "CC24_311a", "CC24_311b", "CC24_311c", "CC24_311d"),
+  Description = c("Knowledge of party controlling U.S. House", 
+                 "Knowledge of party controlling U.S. Senate", 
+                 "Knowledge of governor's party", 
+                 "Knowledge of first senator's party", 
+                 "Knowledge of second senator's party", 
+                 "Knowledge of House rep's party"),
+  Type = rep("Categorical", 6),
+  Values = c(
+    "1=Republicans, 2=Democrats, 3=Neither, 4=Not sure, 8=skipped, 9=not asked",
+    "1=Republicans, 2=Democrats, 3=Neither, 4=Not sure, 8=skipped, 9=not asked",
+    "1=Never heard of person, 2=Republican, 3=Democrat, 4=Other/Independent, 5=Not sure, 8=skipped, 9=not asked",
+    "1=Never heard of person, 2=Republican, 3=Democrat, 4=Other/Independent, 5=Not sure, 8=skipped, 9=not asked",
+    "1=Never heard of person, 2=Republican, 3=Democrat, 4=Other/Independent, 5=Not sure, 8=skipped, 9=not asked",
+    "1=Never heard of person, 2=Republican, 3=Democrat, 4=Other/Independent, 5=Not sure, 8=skipped, 9=not asked"
+  ),
+  Source = rep("Original CCES", 6)
+)
+
+# Format the table with kable
+original_knowledge_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Source"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+### Derived Knowledge Variables
+
+```{r}
+#| label: tbl-derived-knowledge
+#| tbl-cap: "Derived Knowledge Variables"
+
+# Create data frame for derived knowledge variables
+derived_knowledge_df <- data.frame(
+  Variable_Name = c("knowledge_house", "knowledge_senate", "knowledge_house_rep", 
+                   "knowledge_senate1", "knowledge_senate2", "knowledge_governor",
+                   "political_knowledge_index", "political_knowledge_std"),
+  Description = c("Correct knowledge of House party control",
+                  "Correct knowledge of Senate party control",
+                  "Correct knowledge of House rep's party",
+                  "Correct knowledge of first senator's party",
+                  "Correct knowledge of second senator's party",
+                  "Correct knowledge of governor's party",
+                  "Sum of correct knowledge responses",
+                  "Standardized knowledge index"),
+  Type = c(rep("Binary", 6), "Numeric", "Numeric"),
+  Values = c(rep("0=Incorrect, 1=Correct", 6), "0-6", "Z-scores"),
+  Creation_Method = c(
+    "1 if CC24_310a=1 (correct answer), 0 otherwise",
+    "1 if CC24_310b=2 (correct answer), 0 otherwise",
+    "1 if (CurrentHouseParty=\"Republican\" & CC24_311d=2) OR (CurrentHouseParty=\"Democrat\" & CC24_311d=3), 0 otherwise",
+    "1 if (CurrentSen1Party=\"Republican\" & CC24_311b=2) OR (CurrentSen1Party=\"Democrat\" & CC24_311b=3), 0 otherwise",
+    "1 if (CurrentSen2Party=\"Republican\" & CC24_311c=2) OR (CurrentSen2Party=\"Democrat\" & CC24_311c=3), 0 otherwise",
+    "1 if (CurrentGovParty=\"Republican\" & CC24_311a=2) OR (CurrentGovParty=\"Democrat\" & CC24_311a=3), 0 otherwise",
+    "Sum of the six knowledge binary variables",
+    "Standardized version of political_knowledge_index"
+  )
+)
+
+# Format the table with kable
+derived_knowledge_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Creation Method"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+## Media and Information Source Variables
+
+### Original CCES Media Variables
+
+```{r}
+#| label: tbl-original-media
+#| tbl-cap: "Original CCES Media Variables"
+
+# Create data frame for original media variables
+original_media_df <- data.frame(
+  Variable_Name = c("CC24_300_1", "CC24_300_2", "CC24_300_3", "CC24_300_4", "CC24_300_5",
+                   "CC24_300b_1 - CC24_300b_8", "CC24_300d_1 - CC24_300d_6", "newsint"),
+  Description = c("Used social media in past 24 hrs",
+                 "Watched TV news in past 24 hrs",
+                 "Read newspaper in past 24 hrs",
+                 "Listened to radio news in past 24 hrs",
+                 "No media use in past 24 hrs",
+                 "Media networks watched",
+                 "Social media political activities",
+                 "Interest in news"),
+  Type = rep("Categorical", 8),
+  Values = c(
+    rep("1=selected, 2=not selected, 8=skipped, 9=not asked", 6),
+    "1=selected, 2=not selected, 8=skipped, 9=not asked",
+    "1=Most of the time, 2=Some of the time, 3=Only now and then, 4=Hardly at all, 7=Don't know, 98=skipped, 99=not asked"
+  ),
+  Source = rep("Original CCES", 8)
+)
+
+# Format the table with kable
+original_media_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Source"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+### Derived Media Variables
+
+```{r}
+#| label: tbl-derived-media
+#| tbl-cap: "Derived Media Variables"
+
+# Create data frame for derived media variables
+derived_media_df <- data.frame(
+  Variable_Name = c(
+    "uses_social_media", "uses_tv_news", "uses_newspaper", "uses_radio_news", "uses_no_media",
+    "watches_mainstream", "watches_cnn_msnbc", "watches_fox_news", 
+    "media_diversity_index", "media_diversity_std",
+    "social_media_engagement_index", "social_media_engagement_std",
+    "news_interest", "news_interest_std",
+    "primary_news_source", "news_source_type",
+    "source_diversity", "source_diversity_count"
+  ),
+  Description = c(
+    "Used social media", "Watched TV news", "Read newspaper", "Listened to radio news", "Used no media",
+    "Watches mainstream networks", "Watches CNN or MSNBC", "Watches Fox News",
+    "Count of media types used", "Standardized media diversity",
+    "Count of social media political activities", "Standardized social media engagement",
+    "Interest in news (recoded)", "Standardized news interest",
+    "Primary source of news", "Broader category of news source",
+    "Categorical media source diversity", "Count of distinct media sources used"
+  ),
+  Type = c(
+    rep("Binary", 8),
+    "Numeric", "Numeric",
+    "Numeric", "Numeric",
+    "Numeric", "Numeric",
+    "Categorical", "Categorical",
+    "Categorical", "Numeric"
+  ),
+  Values = c(
+    rep("0=No, 1=Yes", 8),
+    "0-4", "Z-scores",
+    "0-5", "Z-scores",
+    "1-4", "Z-scores",
+    "10 categories", "5 categories",
+    "None, Single Source, Two Sources, Three+ Sources", "0-4"
+  ),
+  Creation_Method = c(
+    "1 if CC24_300_1=1, 0 otherwise",
+    "1 if CC24_300_2=1, 0 otherwise",
+    "1 if CC24_300_3=1, 0 otherwise",
+    "1 if CC24_300_4=1, 0 otherwise",
+    "1 if CC24_300_5=1, 0 otherwise",
+    "1 if any of CC24_300b_1, CC24_300b_2, CC24_300b_3, or CC24_300b_7 = 1, 0 otherwise",
+    "1 if CC24_300b_4=1 or CC24_300b_6=1, 0 otherwise",
+    "1 if CC24_300b_5=1, 0 otherwise",
+    "Sum of uses_social_media, uses_tv_news, uses_newspaper, uses_radio_news",
+    "Standardized version of media_diversity_index",
+    "Sum of engagement in political activities on social media (if uses_social_media=1)",
+    "Standardized version of social_media_engagement_index",
+    "Recoded from newsint: 4=\"Most of the time\", 3=\"Some of the time\", 2=\"Only now and then\", 1=\"Hardly at all\"",
+    "Standardized version of news_interest",
+    "Based on hierarchical classification of media use patterns",
+    "Aggregation of primary_news_source into broader categories",
+    "Categorical version of source_diversity_count",
+    "Sum of binary indicators for different media sources used"
+  )
+)
+
+# Format the table with kable
+derived_media_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Creation Method"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+## Voting Behavior Variables
+
+### Original CCES Voting Variables
+
+```{r}
+#| label: tbl-original-voting
+#| tbl-cap: "Original CCES Voting Variables"
+
+# Create data frame for original voting variables
+original_voting_df <- data.frame(
+  Variable_Name = c("CC24_401", "CC24_410", "CC24_411", "CC24_412", "CC24_413"),
+  Description = c("Voted in 2024 General election",
+                 "Presidential vote",
+                 "Senate vote",
+                 "House vote",
+                 "Governor vote"),
+  Type = rep("Categorical", 5),
+  Values = c(
+    "1=Did not vote, 2=Thought about voting but didn't, 3=Usually vote but didn't, 4=Attempted but couldn't, 5=Definitely voted, 8=skipped, 9=not asked",
+    "1-9=Candidate choices, 98=skipped, 99=not asked",
+    "1-6=Candidate choices, 8=Not sure, 98=skipped, 99=not asked",
+    "1-10=Candidate choices, 11=Did not vote, 13=Not sure, 98=skipped, 99=not asked",
+    "1-5=Candidate choices, 7=Not sure, 98=skipped, 99=not asked"
+  ),
+  Source = rep("Original CCES", 5)
+)
+
+# Format the table with kable
+original_voting_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Source"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+### Derived Voting Variables
+
+```{r}
+#| label: tbl-derived-voting
+#| tbl-cap: "Derived Voting Variables"
+
+# Create data frame for derived voting variables
+derived_voting_df <- data.frame(
+  Variable_Name = c("voted"),
+  Description = c("Whether respondent voted"),
+  Type = c("Binary"),
+  Values = c("0=No, 1=Yes"),
+  Creation_Method = c("1 if CC24_401=5, 0 otherwise")
+)
+
+# Format the table with kable
+derived_voting_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Creation Method"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+## Demographic and Control Variables
+
+### Original CCES Demographic Variables
+
+```{r}
+#| label: tbl-original-demographics
+#| tbl-cap: "Original CCES Demographic Variables"
+
+# Create data frame for original demographic variables
+original_demographics_df <- data.frame(
+  Variable_Name = c("educ", "birthyr", "gender4", "race", "hispanic", "faminc_new", "urbancity", "inputstate", "pid7"),
+  Description = c("Education level",
+                 "Birth year",
+                 "Gender",
+                 "Race",
+                 "Hispanic",
+                 "Family income",
+                 "Type of area",
+                 "State of residence",
+                 "7-point party identification"),
+  Type = c(rep("Categorical", 9)),
+  Values = c(
+    "1=No HS, 2=HS graduate, 3=Some college, 4=2-year degree, 5=4-year degree, 6=Post-grad, 8=skipped, 9=not asked",
+    "Year values",
+    "1=Man, 2=Woman, 3=Non-binary, 4=Other, 8=skipped, 9=not asked",
+    "1=White, 2=Black, 3=Hispanic, 4=Asian, 5=Native American, 6=Two or more races, 7=Other, 8=Middle Eastern, 98=skipped, 99=not asked",
+    "1=Yes, 2=No, 8=skipped, 9=not asked",
+    "1-16=Income brackets, 97=Prefer not to say, 998=skipped, 999=not asked",
+    "1=City, 2=Suburb, 3=Town, 4=Rural area, 5=Other, 8=skipped, 9=not asked",
+    "1-56=State codes",
+    "1=Strong Democrat through 7=Strong Republican, 8=Not sure, 9=Don't know"
+  ),
+  Source = rep("Original CCES", 9)
+)
+
+# Format the table with kable
+original_demographics_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Source"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+### Derived Demographic Variables
+
+```{r}
+#| label: tbl-derived-demographics
+#| tbl-cap: "Derived Demographic Variables"
+
+# Create data frame for derived demographic variables
+derived_demographics_df <- data.frame(
+  Variable_Name = c("education_level", "age", "income_level", "pid7_factor"),
+  Description = c("Numeric education level",
+                 "Age in years",
+                 "Numeric income level",
+                 "Labeled party identification"),
+  Type = c(rep("Numeric", 3), "Categorical"),
+  Values = c(
+    "1-6", 
+    "Age values", 
+    "1-16",
+    "Strong Democrat, Moderate Democrat, Lean Democrat, Independent, Lean Republican, Moderate Republican, Strong Republican"
+  ),
+  Creation_Method = c(
+    "Direct conversion of educ to numeric",
+    "2024 - birthyr",
+    "Direct conversion of faminc_new to numeric",
+    "Factor conversion of pid7 with labels"
+  )
+)
+
+# Format the table with kable
+derived_demographics_df |>
+  kable(col.names = c("Variable Name", "Description", "Type", "Values", "Creation Method"),
+        align = c("l", "l", "c", "l", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, bold = TRUE)
+```
+
+## Notes on Variable Construction
+
+```{r}
+#| label: tbl-variable-notes
+#| tbl-cap: "Notes on Variable Construction"
+
+# Create a data frame for notes
+notes_df <- data.frame(
+  Note_Number = c(1, 2, 3),
+  Note_Description = c(
+    "Political Knowledge Index: The index sums correct responses across six knowledge questions, with values ranging from 0 (no correct answers) to 6 (all correct answers).",
+    "Media Source Typology: The primary_news_source variable was created using a hierarchical classification that prioritizes more distinctive media consumption patterns. The news_source_type variable further aggregates these into broader conceptual categories.",
+    "Missing Data: Variables with CCES values of 8 (skipped) or 9 (not asked) were generally treated as missing in derived variables."
+  )
+)
+
+# Format the table with kable
+notes_df |>
+  kable(col.names = c("Note", "Description"),
+        align = c("c", "l")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE,
+                position = "left") |>
+  column_spec(1, width = "2em") |>  
+  column_spec(1, bold = TRUE)
+```
+
+# Conclusion
+
+This document has detailed the process of data cleaning and variable construction for our analysis of political knowledge, information sources, and voting behavior using the CCES dataset. The comprehensive data dictionary provides clear documentation of all variables used in the analysis, facilitating transparency and reproducibility of our research. 
+
+The processed dataset (`cces_processed.rds`) is now ready for use in the main analysis.
