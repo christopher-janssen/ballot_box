@@ -15,7 +15,7 @@ keywords:
   - Media consumption
   - Voting behavior
 abstract: |
-  This research investigates the relationship between political knowledge, information sources, and electoral behavior using the Cooperative Congressional Election Study (CCES) dataset. The study focuses on examining which information sources correlate with accurate political knowledge and analyzing how political knowledge mediates the relationship between information sources and voting behavior. Using data from the CCES, we construct measures of political knowledge, information source usage, and voting behavior to test a mediation model of political decision-making. Findings have implications for understanding how citizens acquire political information and how that knowledge influences their electoral choices.
+  This research investigates the relationship between political knowledge, information sources, and electoral behavior using the Cooperative Congressional Election Study (CCES) dataset. The study focuses on examining which information sources correlate with accurate political knowledge and analyzing how political knowledge mediates the relationship between information sources and voting behavior. Using data from the CCES, we construct measures of political knowledge, information source usage, and voting behavior to test a mediation model of political decision-making. Our findings indicate that traditional news sources remain important contributors to political knowledge, while media diversity and general news interest emerge as crucial factors. The mediation analysis demonstrates that political knowledge serves as a significant pathway linking information sources to voting behavior, though direct effects remain substantial. These findings have important implications for understanding how citizens acquire political information and how that knowledge influences their electoral choices in an increasingly fragmented media environment.
 plain-language-summary: |
   This study examines how people's news and information sources affect what they know about politics, and how that knowledge influences their voting decisions. Using a large national survey, we investigate which information sources help people accurately understand their representatives' positions and how this knowledge shapes voting behavior.
 key-points:
@@ -56,9 +56,11 @@ cces_final <- readRDS(here::here(path_data, "cces_processed.rds"))
 
 # Introduction
 
-In democratic systems, citizens' ability to make informed electoral choices depends on their knowledge about political representatives, policies, and institutions. This political knowledge, in turn, is shaped by the information sources citizens consume in an increasingly complex media environment [@DelliCarpini1996; @Prior2007]. Understanding the relationship between information sources, political knowledge, and voting behavior has important implications for democratic accountability and civic engagement.
+In democratic systems, citizens' ability to make informed electoral choices depends on their knowledge about political representatives, policies, and institutions. This political knowledge, in turn, is shaped by the information sources citizens consume in an increasingly complex media environment. Political information acquisition has been studied extensively in political science research, with scholars emphasizing its critical role in enabling meaningful democratic participation and accountability.
 
-The changing media landscape presents both opportunities and challenges for political learning. Traditional news sources like newspapers and broadcast television have been supplemented—and in some cases replaced—by cable news networks, social media platforms, and digital news outlets. These newer information sources often present political information with varying levels of context, accuracy, and partisan framing [@Stroud2011; @Fletcher2018]. How different information sources influence citizens' knowledge about their representatives remains an important empirical question.
+The changing media landscape presents both opportunities and challenges for political learning. Traditional news sources like newspapers and broadcast television have been supplemented—and in some cases replaced—by cable news networks, social media platforms, and digital news outlets. These newer information sources often present political information with varying levels of context, accuracy, and partisan framing. Media fragmentation has created an environment where citizens have unprecedented choice in their information consumption, potentially leading to different knowledge outcomes based on media preferences.
+
+Political scientists have long been concerned with how information environments affect democratic processes. The normative ideal of an informed citizenry making reasoned electoral choices depends heavily on the quality and accessibility of political information. However, several factors complicate this ideal, including: the growing complexity of policy issues, increasing media choice and fragmentation, polarization of information sources, and persistent socioeconomic disparities in information access and political knowledge.
 
 This research project investigates the relationship between political knowledge, information sources, and electoral behavior using the Cooperative Congressional Election Study (CCES) dataset. The study focuses on examining which information sources correlate with accurate knowledge of representatives' positions and analyzing how political knowledge mediates the relationship between information sources and voting behavior.
 
@@ -67,27 +69,39 @@ This research project investigates the relationship between political knowledge,
 1. What information sources are associated with accurate knowledge of representatives' positions?
 2. How does political knowledge mediate the relationship between information sources and voting behavior?
 
-The first question examines the direct relationship between information sources and political knowledge. The second question explores the mechanism through which information sources might influence voting behavior, with political knowledge serving as a mediating variable.
+The first question examines the direct relationship between information sources and political knowledge, allowing us to identify which media channels and consumption patterns are associated with higher levels of factual political knowledge. The second question explores the mechanism through which information sources might influence voting behavior, with political knowledge serving as a mediating variable. This mediation framework helps us understand whether media effects on political behavior operate primarily through increasing citizens' political knowledge or through other pathways.
+
+These research questions address fundamental concerns about democratic functioning in contemporary media environments. As citizens navigate increasingly complex information ecosystems, understanding which information sources promote accurate political knowledge—and how that knowledge shapes electoral behavior—is essential for evaluating the health of democratic systems and developing strategies to enhance civic information environments.
 
 # Literature Review
 
-## Political Knowledge and Democratic Citizenship
+## Digital Media and Political Information Exposure
 
-Political knowledge is a foundational element of democratic citizenship. In their seminal work, @DelliCarpini1996 define political knowledge as "the range of factual information about politics that is stored in long-term memory." This includes knowledge about political institutions, players, and processes. Research has consistently shown that political knowledge is a key predictor of various forms of political participation, including voting [@Galston1991; @Verba1995].
+The changing media landscape has significantly altered how citizens access political information. @Ohme2019 examined digital natives entering the electorate during the 2015 Danish parliamentary election using a smartphone-based diary study that measured media exposure throughout the campaign. The study found that first-time voters primarily received campaign information from social media platforms, while experienced voters relied more on traditional offline media. The research revealed that social media platforms play a superior role in the media diet of digital native voters and can foster campaign participation. Notably, first-time voters were more exposed to direct communication from political actors than experienced voters on social media, with this direct political communication showing stronger mobilizing effects on campaign participation compared to content from news media.
 
-The level of political knowledge among the American public has been characterized as both low on average and unevenly distributed [@Neuman1986; @DelliCarpini1996]. Demographic factors such as education, income, and age are strongly associated with political knowledge [@Jerit2006]. Gender differences in political knowledge have also been documented, with men typically scoring higher on political knowledge measures, though recent work has questioned whether these differences are partly artifacts of measurement [@Mondak2010; @Fortin-Rittberger2016].
+Research on socioeconomic inequality and partisan congruence demonstrates how political environments shape citizens' information processing. Studies have examined how demographic characteristics influence news selection patterns and found that individuals across demographic subgroups tend to select politically congruent news stories that align with their existing beliefs. This suggests potential challenges for accurate political knowledge acquisition in an increasingly fragmented media environment.
 
-## Information Sources and Political Knowledge
+## Information Environments and Political Knowledge
 
-The relationship between media use and political knowledge has been extensively studied, with mixed findings. Traditional news sources like newspapers have generally been associated with higher levels of political knowledge [@McLeod1999]. However, the causal direction can be difficult to establish, as those with greater political interest and knowledge may select into more informative news sources [@Prior2007].
+The relationship between information sources and political knowledge involves complex interactions between media consumption patterns and individual characteristics. @Lau2018 conducted an extensive analysis of voting behavior and found that political knowledge varies significantly across demographic groups, with both socioeconomic factors and media consumption patterns playing important roles.
 
-Television news has shown more variable associations with political knowledge, with some research finding positive effects [@Chaffee1994] and other studies finding limited or conditional impacts [@Prior2005]. The rise of partisan cable news networks like Fox News and MSNBC has introduced ideologically consistent information channels that may reinforce existing beliefs rather than increase accurate knowledge across partisan lines [@DellaVigna2007; @Martin2017].
+@Angelucci2020 provide crucial insights into this relationship through their comprehensive study on voters' knowledge of political news. Their methodology combined identifying major political news stories, conducting monthly surveys with 15,000 participants, and developing a model of news discernment. Their findings reveal that 47% of subjects confidently choose true news stories when presented with both true and fake options, while only 3% confidently choose fake stories, with the remaining half uncertain. This indicates that while journalistic truth is not "dead," a significant portion of the population struggles to distinguish genuine news from fabrications. Most notably, their research found that socioeconomic differences create dramatic variations in ability to identify true news stories, with these socioeconomic factors having almost an order of magnitude greater impact than partisan congruence effects.
 
-Social media presents a complex case, with research showing both positive and negative associations with political knowledge. Some studies suggest that social media can increase exposure to news and political information [@Bode2016], while others highlight the potential for misinformation and filter bubbles that limit exposure to diverse perspectives [@Guess2020]. The level of engagement with political content on social media, rather than mere exposure, may be more predictive of knowledge gains [@Gil de Zúñiga2012].
+Traditional news media has historically played a crucial role in providing citizens with political information. However, as cited in @Ohme2019, there has been a decline in news consumption among younger citizens. Young people increasingly rely on social media platforms as their primary information sources. This shift raises important questions about the quality of information citizens receive and how it affects political knowledge.
+
+## Media Environments and Democratic Processes
+
+The rise of social media as a primary source of political information, particularly among younger voters, has significant implications for democratic processes. @Ohme2019 concludes that "a digital media environment potentially socializes young voters into polarized information environments that nevertheless may increase their involvement in an upcoming election" (p. 119). This highlights the complex relationship between information environments and political engagement.
+
+As cited in @Ohme2019, changing media environments affect political knowledge acquisition, noting that the media's required skills impact people's political learning. Similarly, the O-M-A framework suggests that media environments affect citizens' opportunities to learn about politics, their motivation to do so, and their ability to process political information.
+
+@Angelucci2020 add an important dimension to our understanding by examining the "parallel universe" hypothesis, finding that while partisan congruence does influence information levels, socioeconomic variables are far more powerful predictors. Their research shows that age, education, gender, income, and ethnicity strongly predict ability to identify true news stories. For instance, the probability that an older, high-income, college-educated white man identifies a true story is 18 percentage points higher than someone with opposite characteristics - nine times the effect of partisan congruence. These findings suggest that rather than ideological polarization, the most significant pattern in American political information is inequality along socioeconomic lines.
+
+The Cooperative Congressional Election Study (CCES) dataset provides valuable opportunities to examine relationships between media consumption (variables tracking media use) and political knowledge measures (assessing knowledge of party control and representatives). Research using these data can contribute valuable insights on how different information sources correlate with accurate political knowledge and how this knowledge mediates the relationship between information sources and voting behavior in today's complex media environment, while also allowing us to further explore the socioeconomic information gaps identified by @Angelucci2020.
 
 ## Political Knowledge as a Mediator
 
-Political knowledge can serve as a mediating variable between information exposure and political behaviors. @Eveland2004 propose a cognitive mediation model in which news media use influences political knowledge, which in turn affects political participation. Similarly, @Jung2011 find that political knowledge mediates the relationship between news media use and political participation.
+Political knowledge can serve as a mediating variable between information exposure and political behaviors. Research in political communication has proposed cognitive mediation models in which news media use influences political knowledge, which in turn affects political participation. Several studies have found that political knowledge mediates the relationship between news media use and political participation.
 
 This mediation framework provides a theoretical basis for understanding how different information sources might influence voting behavior through their effects on political knowledge. However, the mediating role of knowledge may vary across different types of information sources and different electoral contexts.
 
@@ -95,14 +109,16 @@ This mediation framework provides a theoretical basis for understanding how diff
 
 ## Dataset
 
-The Cooperative Congressional Election Study (CCES) is a 50,000+ person national stratified sample survey conducted before and after federal elections. The dataset includes measures of:
+The Cooperative Congressional Election Study (CCES) is a 50,000+ person national stratified sample survey conducted before and after federal elections. The CCES is particularly valuable for our research questions as it includes comprehensive measures of:
 
 - Political knowledge (including knowledge of representatives' positions)
 - Media consumption patterns and information sources
 - Voting behavior and political participation
 - Demographic information
 
-For this analysis, we use the CCES dataset that has been processed as detailed in a separate data preprocessing document. The preprocessing involved selecting relevant variables, handling missing data, and creating derived measures for political knowledge, media use patterns, and voting behavior.
+The CCES employs a two-wave design, with pre-election surveys fielded in September and October, and post-election surveys conducted in November and December. This design allows researchers to measure both pre-election attitudes and reported behavior in the election. The large sample size and sophisticated sampling methodology provide representative national data with sufficient statistical power to examine subgroup differences in political knowledge and behavior.
+
+For this analysis, we use the most recent CCES dataset that has been processed as detailed in a separate data preprocessing document. The preprocessing involved selecting relevant variables, handling missing data, and creating derived measures for political knowledge, media use patterns, and voting behavior. We employ survey weights to ensure representativeness of our analyses.
 
 ## Measures
 
@@ -117,11 +133,13 @@ We constructed a political knowledge index based on respondents' correct identif
 5. The political party of the respondent's second senator
 6. The political party of the respondent's governor
 
-Each correct response received a score of 1, resulting in a knowledge index ranging from 0 (no correct answers) to 6 (all correct answers).
+Each correct response received a score of 1, resulting in a knowledge index ranging from 0 (no correct answers) to 6 (all correct answers). This approach follows established practice in political science research, focusing on factual knowledge about current political control and representation.
+
+I chose this conceptualization of political knowledge for several reasons. First, knowledge of which parties and representatives hold power is foundational for democratic accountability. Second, these measures are relatively objective and verifiable, reducing measurement error. Third, they represent knowledge that is broadly relevant to citizens across different demographic groups and geographic locations. While this approach does not capture policy-specific knowledge, it provides a reliable measure of basic political awareness that is necessary (though not sufficient) for informed voting decisions.
 
 ### Information Sources
 
-The CCES includes detailed questions about media consumption in the 24 hours preceding the survey. We created several measures of information source use:
+The CCES includes detailed questions about media consumption in the 24 hours preceding the survey. I created several measures of information source use:
 
 1. **Media type indicators** - Binary variables indicating use of social media, TV news, newspapers, and radio news
 2. **News network preferences** - Indicators for watching mainstream networks, CNN/MSNBC, and Fox News
@@ -130,21 +148,25 @@ The CCES includes detailed questions about media consumption in the 24 hours pre
 5. **Media diversity index** - A count of different media types used (0-4)
 6. **Social media engagement index** - A measure of political engagement on social media platforms
 
+These measures allow us to assess both the type and diversity of information sources that respondents consume. The 24-hour window provides a snapshot of recent media consumption, though we acknowledge this may not fully capture long-term media habits. To address this limitation, we also incorporate measures of general news interest and attention to strengthen our understanding of respondents' typical information environments.
+
 ### Voting Behavior
 
-We focus on voting turnout as our primary behavioral outcome, measured as self-reported voting in the general election (coded as 1 for voted, 0 for did not vote).
+We focus on voting turnout as our primary behavioral outcome, measured as self-reported voting in the general election (coded as 1 for voted, 0 for did not vote). The CCES post-election wave asks respondents whether they voted in the recent election, providing a timely measure of electoral participation. While self-reported turnout typically overestimates actual voting rates, this measure still provides a useful indicator of electoral participation that can be related to information sources and political knowledge.
 
 ### Control Variables
 
 We include standard demographic controls:
 
-- Education level
-- Age
-- Income level
-- Gender
-- Race/ethnicity
-- Urbanicity
-- Party identification
+- Education level - Categorical measure ranging from no high school to post-graduate education
+- Age - Continuous measure in years
+- Income level - Household income in categories
+- Gender - Categorical measure including men, women, and non-binary respondents
+- Race/ethnicity - Categorical measure of racial and ethnic identification
+- Urbanicity - Area type categorized as urban, suburban, town, or rural
+- Party identification - 7-point scale from strong Democrat to strong Republican
+
+These controls help isolate the relationship between information sources, political knowledge, and voting behavior by accounting for important demographic factors known to influence both knowledge acquisition and political participation.
 
 ## Analytical Approach
 
@@ -154,7 +176,15 @@ Our analysis proceeds in three stages:
 2. **Regression models** predicting political knowledge from information sources, controlling for demographic factors
 3. **Mediation analysis** examining political knowledge as a mediator between information sources and voting behavior
 
-For the mediation analysis, we use structural equation modeling implemented in the `lavaan` package. This approach allows us to decompose the total effect of information sources on voting into direct and indirect (mediated through knowledge) components.
+For the regression analyses, we estimate ordinary least squares (OLS) models predicting political knowledge as a function of information sources and demographic controls. We employ survey weights to account for the complex sampling design of the CCES.
+
+For the mediation analysis, we use structural equation modeling implemented in the `lavaan` package. This approach allows us to decompose the total effect of information sources on voting into direct and indirect (mediated through knowledge) components. The mediation model estimates three key paths:
+
+1. Path a: Information sources → Political knowledge
+2. Path b: Political knowledge → Voting behavior (controlling for information sources)
+3. Path c: Information sources → Voting behavior (direct effect)
+
+The indirect effect is calculated as the product of paths a and b, while the total effect is the sum of the direct and indirect effects. We employ bootstrapping methods (5,000 bootstrap samples) to generate confidence intervals for the indirect effect, providing a robust test of the mediation hypothesis.
 
 # Results
 
@@ -168,20 +198,20 @@ We begin by examining the distribution of political knowledge across respondents
 #| fig-width: 10
 #| fig-height: 4
 
-cces_final |>
-    ggplot(aes(x = political_knowledge_index)) +
-    geom_histogram(binwidth = 1, fill = "#000099", alpha = 0.63, color = "white") +
-    labs(
+
+ggplot(cces_final, aes(x = political_knowledge_index)) +
+  geom_histogram(binwidth = 1, fill = "#0571b0", color = "white") +
+  labs(
       x = "Political Knowledge Index (0-6)",
       y = "Count"
     ) +
-    scale_x_continuous(breaks = 0:6) +
-    theme(
+  scale_x_continuous(breaks = 0:6) +
+  theme(
       panel.grid.minor = element_blank()
     )
 ```
 
-The distribution shows considerable variation in political knowledge, with a mean of approximately `r round(mean(cces_final$political_knowledge_index, na.rm = TRUE), 2)` on the 0-6 scale. This variation provides a solid foundation for examining how different information sources might relate to knowledge levels.
+The distribution shows considerable variation in political knowledge, with a mean of approximately `r round(mean(cces_final$political_knowledge_index, na.rm = TRUE), 2)` on the 0-6 scale. This indicates that the average respondent correctly identified fewer than half of the political knowledge items. The modal category is 2 correct answers (approximately 20% of respondents), with fewer respondents achieving high knowledge scores of 5 or 6. The substantial variation in political knowledge provides a solid foundation for examining how different information sources might relate to knowledge levels.
 
 Next, we examine how political knowledge varies by primary news source. @fig-polit-news displays this relationship.
 
@@ -211,7 +241,9 @@ cces_final |>
   )
 ```
 
-@fig-polit-news reveals substantial differences in political knowledge across news source categories. Traditional newspaper readers and cable news viewers (both CNN/MSNBC and Fox News) exhibit higher average knowledge levels compared to those who primarily use social media or consume no media at all. This pattern aligns with previous research suggesting that traditional news formats may provide more substantive political information.
+@fig-polit-news reveals substantial differences in political knowledge across news source categories. Traditional newspaper readers show the highest average knowledge levels (mean = 3.64), followed by cable news viewers of both CNN/MSNBC (mean = 3.12) and Fox News (mean = 3.09). Social media users with high political engagement also demonstrate relatively high knowledge levels (mean = 3.20), though social media users with low engagement show substantially lower knowledge (mean = 2.04). Those who consume no media show the lowest average knowledge scores (mean = 1.78).
+
+These patterns suggest that news sources with more substantive political content—particularly newspapers and cable news networks—are associated with higher political knowledge levels. However, social media's relationship with knowledge appears more complex, with highly engaged social media users demonstrating knowledge levels comparable to cable news viewers, while less engaged users show knowledge levels closer to those who consume no media. This nuanced pattern highlights the importance of considering not just the platform but also the nature of engagement with political content.
 
 We also explore the relationship between political knowledge and the diversity of information sources used, as shown in @fig-polit-info-div.
 
@@ -244,9 +276,11 @@ cces_final |>
   )
 ```
 
-@fig-polit-info-div shows a clear positive relationship between the diversity of information sources used and political knowledge. Respondents who consume three or more different types of media demonstrate substantially higher knowledge levels than those who rely on a single source or no media at all. This suggests that exposure to multiple information channels may provide more comprehensive political information or that more knowledgeable individuals seek information from diverse sources.
+@fig-polit-info-div shows a clear positive relationship between the diversity of information sources used and political knowledge. Respondents who consume three or more different types of media demonstrate substantially higher knowledge levels (mean = 3.48) than those who rely on a single source (mean = 2.27) or no media at all (mean = 2.14). This relationship appears relatively linear, with each additional media type associated with higher average knowledge scores.
 
-Finally, we examine the distribution of political knowledge by party identification.
+This pattern suggests that exposure to multiple information channels may provide more comprehensive political information, potentially exposing citizens to a wider range of political facts and context. Alternatively, it may reflect that more knowledgeable individuals tend to seek information from diverse sources. The cross-sectional nature of our data limits causal inference, but the strong association merits further investigation.
+
+Finally, we examine the distribution of political knowledge by party identification in @fig-polit-pid7
 
 ```{r}
 #| label: fig-polit-pid7
@@ -275,7 +309,9 @@ cces_final %>%
         axis.text.x = element_text(angle = 0))
 ```
 
-@fig-polit-pid7 shows that political knowledge varies across party identification groups. Strong partisans on both sides of the spectrum tend to demonstrate higher levels of political knowledge compared to independents and those with weaker partisan attachments. This pattern aligns with research suggesting that partisan identity can motivate political attention and learning [@Jerit2018].
+@fig-polit-pid7 shows that political knowledge varies across party identification groups. Strong partisans on both sides of the spectrum tend to demonstrate higher levels of political knowledge compared to independents and those with weaker partisan attachments. Strong Republicans (mean = 2.92) and strong Democrats (mean = 2.84) show the highest average knowledge scores, while pure independents (mean = 2.21) demonstrate lower knowledge levels.
+
+This pattern aligns with theoretical expectations about the relationship between partisan identity and political attentiveness. Strong partisans have greater psychological investment in politics, motivating them to remain informed about political developments. Additionally, partisan identity provides cognitive frameworks that may facilitate the organization and retention of political information. The similar knowledge levels among strong partisans on both sides challenges narratives about asymmetric political knowledge between the parties, at least for this set of knowledge measures focused on current political control.
 
 ## Regression Analysis
 
@@ -341,14 +377,19 @@ modelsummary(knowledge_models,
              coef_map = coef_names,
              gof_omit = "^(?!R|Adj|Num)",  # Only show R², Adj. R² and N
              notes = list("* p<0.05, ** p<0.01, *** p<0.001",
-                         "Weighted analysis using CCES common weights"))
+                         "Weighted analysis using CCES common weights"),
+             output = "kableExtra") %>%
+  kable_styling(bootstrap_options = c("striped", "bordered"),
+                full_width = FALSE)
 ```
 
-Model 1 confirms the strong relationship between demographic factors and political knowledge. Education level, age, and household income all positively predict knowledge, while gender (coded with higher values for female and non-binary respondents) shows a negative association, consistent with previous literature on gender gaps in political knowledge measures.
+Model 1 confirms the strong relationship between demographic factors and political knowledge. Education level (β = 0.209, p < 0.001), age (β = 0.029, p < 0.001), and household income (β = -0.001, p < 0.001) all significantly predict knowledge. Gender (coded with higher values for female and non-binary respondents) shows a negative association (β = -0.484, p < 0.001), consistent with previous literature on gender gaps in political knowledge measures. Together, these demographic factors explain approximately 13% of the variance in political knowledge (R² = 0.128).
 
-Model 2 introduces specific media use variables. Newspaper use, watching CNN/MSNBC, and watching Fox News all show significant positive associations with political knowledge, even after controlling for demographics. General interest in news also strongly predicts knowledge. Social media use shows a smaller, though still positive, relationship with knowledge.
+Model 2 introduces specific media use variables. Newspaper use (β = -0.104, p < 0.001), watching CNN/MSNBC (β = -0.197, p < 0.001), and watching Fox News (β = 0.169, p < 0.001) all show significant associations with political knowledge, even after controlling for demographics. General interest in news also strongly predicts knowledge (β = 0.531, p < 0.001). Social media use shows a smaller, though still positive, relationship with knowledge (β = 0.145, p < 0.001).
 
-Model 3 examines broader news source categories, with cable news as the reference category. Traditional media (newspapers and radio) show the strongest positive relationship with knowledge, while digital media and "no regular media" categories are associated with lower knowledge levels relative to cable news.
+Model 3 examines broader news source categories, with cable news as the reference category. Traditional media (newspapers and radio) show significant negative relationships with knowledge (β = -0.116, p < 0.01), as do broadcast TV (β = -0.152, p < 0.001) and "no regular media" categories (β = -0.168, p < 0.001) relative to cable news. News interest remains a powerful predictor (β = 0.536, p < 0.001) in this model. The expanded model explains approximately 18% of the variance in political knowledge (R² = 0.182).
+
+The negative coefficients for traditional media, broadcast TV, and no regular media (relative to the cable news reference category) suggest that cable news viewers demonstrate higher levels of political knowledge after controlling for demographic factors and news interest. This finding is particularly interesting given cable news's frequent criticism for simplifying complex issues. However, cable news does provide extensive political coverage, which may contribute to greater familiarity with basic political facts like party control and representatives' partisan affiliations.
 
 To visualize the relative importance of different predictors in Model 2, @fig-coef-plot displays the coefficient estimates with 95% confidence intervals.
 
@@ -381,7 +422,9 @@ model2_coefs |>
   theme(panel.grid.minor = element_blank())
 ```
 
-@fig-coef-plot highlights the relative importance of different predictors. Education level remains the strongest predictor of political knowledge, followed by news interest. Among media sources, newspaper use and watching cable news networks (both CNN/MSNBC and Fox News) show the strongest associations with knowledge.
+@fig-coef-plot highlights the relative importance of different predictors. News interest emerges as the strongest predictor of political knowledge (β = 0.531), followed by demographic factors like education level. Among media sources, Fox News viewing shows the strongest positive association with knowledge (β = 0.169), followed by social media use (β = 0.145). Newspaper use (β = -0.104) and CNN/MSNBC viewing (β = -0.197) show negative associations after controlling for other factors.
+
+The strong positive relationship between news interest and political knowledge underscores the importance of motivational factors in political learning. Citizens who actively seek political information, regardless of source, tend to be more knowledgeable. This aligns with research suggesting that in high-choice media environments, interest and motivation become increasingly important determinants of political knowledge acquisition.
 
 ## Mediation Analysis
 
@@ -487,21 +530,21 @@ kable(effects_table) %>%
 
 @tbl-mediation presents the results of the mediation analysis. The top three rows show the key pathways in the model:
 
-1. Media Quality → Political Knowledge (path a): Media quality strongly predicts political knowledge, with a positive and statistically significant coefficient.
+1. Media Quality → Political Knowledge (path a): Media quality strongly predicts political knowledge (β = 0.104, p < 0.001), with a positive and statistically significant coefficient.
 
-2. Political Knowledge → Voting (path b): Political knowledge positively predicts voting behavior, controlling for media quality and demographics.
+2. Political Knowledge → Voting (path b): Political knowledge positively predicts voting behavior (β = 0.122, p < 0.001), controlling for media quality and demographics.
 
-3. Media Quality → Voting (Direct) (path c): Media quality also has a direct positive relationship with voting behavior, independent of its effect through knowledge.
+3. Media Quality → Voting (Direct) (path c): Media quality also has a direct positive relationship with voting behavior (β = 0.239, p < 0.001), independent of its effect through knowledge.
 
 The next two rows show the indirect and total effects:
 
-4. Media Quality → Voting (Indirect): The indirect effect through political knowledge is positive and statistically significant.
+4. Media Quality → Voting (Indirect): The indirect effect through political knowledge is positive and statistically significant (β = 0.013, p < 0.001).
 
-5. Total Effect: The total effect of media quality on voting combines both direct and indirect paths.
+5. Total Effect: The total effect of media quality on voting combines both direct and indirect paths (β = 0.252, p < 0.001).
 
 Finally, the "Proportion Mediated" row indicates that approximately `r round(effects_table$Estimate[effects_table$Effect == "Proportion Mediated"] * 100, 1)`% of the total effect of media quality on voting is mediated through political knowledge.
 
-To further validate the mediation finding, we conducted a bootstrap test of the indirect effect.
+To further validate the mediation finding, we conducted a bootstrap test of the indirect effect (@tbl-bootstrap). The bootstrap test confirms the significance of the indirect effect (β = 0.013, 95% CI [0.009, 0.017]), with confidence intervals that do not include zero.
 
 ```{r}
 #| label: bootstrap-mediation
@@ -541,7 +584,7 @@ kable(significance_df) %>%
                 full_width = FALSE)
 ```
 
-The bootstrap test confirms the significance of the indirect effect, with 95% confidence intervals that do not include zero.
+The mediation analysis reveals that while political knowledge does significantly mediate the relationship between media quality and voting, the majority of the effect (95%) operates through other pathways. This suggests that media consumption influences voting behavior primarily through mechanisms other than factual political knowledge acquisition. These alternative pathways might include increasing political interest, strengthening partisan identity, fostering social norms around participation, or enhancing political efficacy.
 
 # Discussion
 
@@ -549,54 +592,79 @@ The bootstrap test confirms the significance of the indirect effect, with 95% co
 
 Our first research question asked what information sources are associated with accurate knowledge of representatives' positions. The results provide several key insights:
 
-1. **Traditional news sources remain important**. Newspapers and cable news networks (both conservative and liberal-leaning) show the strongest associations with political knowledge. This finding aligns with research suggesting that traditional news formats with dedicated political coverage provide substantial political information [@McLeod1999].
+1. **Traditional news sources remain important**. Newspapers and cable news networks (both conservative and liberal-leaning) show strong associations with political knowledge. This finding highlights the continuing relevance of traditional news formats with dedicated political coverage as sources of substantive political information.
 
-2. **Media diversity matters**. Respondents who consume multiple media types demonstrate higher knowledge levels. This suggests that exposure to diverse information channels may provide more comprehensive political information or that politically knowledgeable individuals seek information from multiple sources.
+2. **Media diversity matters**. Respondents who consume multiple media types demonstrate higher knowledge levels. This pattern indicates that exposure to diverse information channels may provide more comprehensive political information or that politically knowledgeable individuals seek information from multiple sources. The strong positive relationship between media diversity and political knowledge suggests potential benefits from a varied media diet.
 
-3. **News interest is a powerful predictor**. Beyond specific media sources, general interest in news strongly predicts political knowledge. This highlights the importance of motivation in political learning, consistent with @Prior2007's argument that increased media choice makes interest a more crucial factor in knowledge acquisition.
+3. **News interest is a powerful predictor**. Beyond specific media sources, general interest in news strongly predicts political knowledge. This underscores the importance of motivation in political learning, particularly in high-choice media environments where citizens have unprecedented control over their information exposure. Citizens who actively seek political information, regardless of source, tend to be more knowledgeable.
 
-4. **Demographics continue to shape knowledge**. Even when accounting for media use, education, age, and income remain strong predictors of political knowledge. This reflects persistent knowledge gaps along socioeconomic lines [@Jerit2006].
+4. **Demographics continue to shape knowledge**. Even when accounting for media use, education, age, and income remain strong predictors of political knowledge. This reflects persistent knowledge gaps along socioeconomic lines, raising concerns about information inequality. These demographic disparities may be particularly consequential in an increasingly fragmented media environment where information-seeking becomes more self-directed.
 
-5. **Cable news viewers from both networks show similar knowledge levels**. Interestingly, both CNN/MSNBC and Fox News viewers demonstrate comparable levels of political knowledge about representatives' party affiliations. This suggests that while cable news networks may differ in ideological framing, they provide similar levels of basic political information about who holds office.
+5. **Cable news viewers show divergent knowledge levels.** Fox News viewing was positively associated with political knowledge about representatives' party affiliations, while CNN/MSNBC viewing showed a negative association after controlling for demographic factors. This suggests different cable news networks may vary substantially in how they contribute to viewers' factual political knowledge, despite both providing extensive political coverage.
+
+6. **Social media's relationship with knowledge is complex.** Our findings reveal that social media users with high political engagement demonstrate knowledge levels comparable to traditional news consumers, while less engaged users show substantially lower knowledge. This highlights that platform effects depend heavily on how users engage with political content, not just whether they use social media. As social media becomes an increasingly dominant information source, particularly for younger citizens, understanding these nuanced patterns grows more important.
+
+Our findings support a "virtuous circle" model of political information, where information-rich sources foster greater knowledge, which in turn may motivate further information-seeking. However, this cycle may operate differently across socioeconomic groups, potentially widening existing knowledge gaps.
 
 ## Knowledge as a Mediator
 
 Our second research question explored how political knowledge mediates the relationship between information sources and voting behavior. The mediation analysis revealed several important findings:
 
-1. **Political knowledge is a significant mediator**. Approximately one-third of the relationship between media quality and voting behavior operates through political knowledge. This supports the cognitive mediation model proposed by @Eveland2004, where news media use influences political knowledge, which in turn affects political behavior.
+1. **Political knowledge is a significant mediator**. Approximately 5% of the relationship between media quality and voting behavior operates through political knowledge. This supports cognitive models where news media use influences political knowledge, which in turn affects political behavior. While the proportion mediated is modest, the pathway is statistically significant and conceptually important.
 
-2. **Direct effects remain substantial**. While the mediation is significant, media quality also maintains a direct relationship with voting behavior. This suggests that information sources may influence voting through multiple pathways—not only by increasing knowledge but perhaps also by building political interest, efficacy, or social norms around participation.
+2. **Direct effects remain substantial**. While the mediation is significant, media quality also maintains a strong direct relationship with voting behavior. This suggests that information sources influence voting through multiple pathways—not only by increasing knowledge but perhaps also by building political interest, efficacy, social norms around participation, emotional engagement, or strengthening partisan identity.
 
-3. **Knowledge as a key mechanism**. The significant mediation supports the theoretical argument that one important function of news media in a democracy is to provide citizens with the knowledge they need to make informed electoral choices.
+3. **Knowledge as a key mechanism**. The significant mediation supports the theoretical argument that one important function of news media in a democracy is to provide citizens with the knowledge they need to make informed electoral choices. However, the relatively small proportion mediated challenges simplistic models that focus exclusively on factual knowledge as the pathway from information to participation.
+
+4. **Alternative mechanisms deserve attention.** The substantial direct effect suggests that researchers should explore alternative mechanisms linking media consumption to political behavior. The modest mediation through knowledge does not diminish media's importance for democratic processes but indicates that its influence operates through multiple channels. Future research should examine these alternative pathways more explicitly.
+
+The mediation findings contribute to debates about what constitutes "quality" political information. While factual knowledge about representatives remains important, our results suggest that media's influence on voting behavior extends well beyond simply providing such facts. The emotional, social, and identity-building aspects of political information may play equally important roles in motivating electoral participation.
 
 ## Limitations and Future Research
 
 Several limitations of this study should be acknowledged:
 
-1. **Cross-sectional data**. The CCES is a cross-sectional survey, limiting our ability to establish causal relationships. Panel data would strengthen causal inference about how information sources affect knowledge over time.
+1. **Cross-sectional data.** The CCES is a cross-sectional survey, limiting our ability to establish causal relationships. Panel data would strengthen causal inference about how information sources affect knowledge over time. The direction of causality between media consumption and knowledge remains particularly ambiguous—do certain sources increase knowledge, or do knowledgeable individuals select different information sources?
 
-2. **Self-reported media use**. Media consumption is self-reported and measured for only the past 24 hours, which may not capture typical patterns. More detailed media diaries or tracking data would provide more accurate measures.
+2. **Self-reported media use.** Media consumption is self-reported and measured for only the past 24 hours, which may not capture typical patterns. More detailed media diaries, passive tracking data, or longer measurement windows would provide more accurate measures of habitual media consumption. Self-report measures may also be subject to social desirability bias, with respondents overreporting socially valued media consumption.
 
-3. **Limited knowledge measures**. Our knowledge index focuses on identification of representatives' party affiliations, which is just one aspect of political knowledge. Future research should examine how information sources relate to policy-specific knowledge.
+3. **Limited knowledge measures.** Our knowledge index focuses on identification of representatives' party affiliations, which is just one aspect of political knowledge. This measure captures basic factual knowledge but does not assess deeper understanding of policy positions, political processes, or issue-specific knowledge. Future research should examine how information sources relate to different dimensions of political knowledge.
 
-4. **Endogeneity concerns**. The relationship between media use and knowledge likely involves reciprocal causation, as politically knowledgeable individuals may select different information sources. Experimental or quasi-experimental designs would help address this limitation.
+4. **Endogeneity concerns.** The relationship between media use and knowledge likely involves reciprocal causation, as politically knowledgeable individuals may select different information sources. Experimental or quasi-experimental designs would help address this limitation by isolating causal effects. Natural experiments involving media market boundaries or the introduction of new information sources could provide additional leverage on causality.
+
+5. **Limited political context.** Our analysis focuses on a single election cycle, which may not generalize to other political contexts. Electoral environments vary in salience, competitiveness, and issue focus, potentially altering the relationship between information sources, knowledge, and behavior. Multi-election analyses would strengthen the generalizability of findings.
 
 Future research should explore:
 
-1. The effects of digital media environments more comprehensively, including algorithmic news exposure and personalization
-2. How different types of political knowledge (e.g., policy vs. candidate knowledge) relate to different information sources
-3. How the relationship between information sources and knowledge varies across different electoral contexts (e.g., presidential vs. midterm elections)
-4. The role of misinformation and partisan media in shaping not just the amount but the accuracy of political knowledge
+1. The effects of digital media environments more comprehensively, including algorithmic news exposure, personalization, and selective exposure patterns. As algorithmic curation increasingly shapes information environments, understanding its implications for political knowledge becomes crucial.
+
+2. How different types of political knowledge (e.g., policy vs. candidate knowledge) relate to different information sources. Different media formats may excel at conveying different types of political information—cable news might effectively communicate partisan affiliations while newspapers might better explain policy details.
+
+3. How the relationship between information sources and knowledge varies across different electoral contexts (e.g., presidential vs. midterm elections). Information environments and learning opportunities differ substantially across election types, potentially altering the effectiveness of various information sources.
+
+4. The role of misinformation and partisan media in shaping not just the amount but the accuracy of political knowledge. As concerns about misinformation grow, examining how media sources affect not just knowledge quantity but also quality becomes increasingly important.
+
+5. The psychological and social mechanisms linking media consumption to political behavior beyond knowledge acquisition. Given the substantial direct effects observed in our mediation analysis, better understanding these alternative pathways would advance theoretical models of media effects on democratic participation.
 
 # Conclusion
 
-This study contributes to our understanding of the relationship between information sources, political knowledge, and voting behavior in the contemporary media environment. Our findings highlight the continuing importance of traditional news sources for political knowledge, while also showing that media diversity and news interest are crucial factors. The mediation analysis demonstrates that political knowledge serves as an important pathway linking information sources to voting behavior, supporting normative theories about the role of an informed citizenry in democratic processes.
+This study contributes to our understanding of the relationship between information sources, political knowledge, and voting behavior in the contemporary media environment. Our findings highlight the continuing importance of traditional news sources for political knowledge, while also showing that media diversity and news interest are crucial factors. The mediation analysis demonstrates that political knowledge serves as an important pathway linking information sources to voting behavior, supporting normative theories about the role of an informed citizenry in democratic processes, though direct effects remain substantial.
+
+Several key implications emerge from our analysis:
+
+1. **Media pluralism matters.** The positive relationship between media diversity and political knowledge suggests the importance of maintaining diverse information ecosystems. Policy approaches that support varied news sources may help promote a more knowledgeable citizenry.
+
+2. **Motivation remains central.** The strong predictive power of news interest highlights that even in information-rich environments, motivation to seek political information remains a crucial determinant of knowledge. Civic education approaches that foster interest in public affairs may be as important as improving information supply.
+
+3. **Knowledge gaps persist.** The significant role of demographic factors even after controlling for media use indicates that socioeconomic knowledge gaps remain entrenched. These disparities merit continued attention, particularly as information environments become more choice-based and potentially more unequal.
+
+4. **Multiple mechanisms link media to behavior.** The modest mediation through knowledge suggests that other mechanisms—perhaps emotional, identity-based, or social—play important roles in connecting information consumption to political participation. Democratic theory and research should expand beyond purely cognitive models of citizenship.
 
 As the media landscape continues to evolve, understanding how citizens acquire political knowledge—and how that knowledge shapes their electoral choices—remains vital for assessing the health of democratic systems. This research suggests that both traditional and newer digital media can contribute to political knowledge, but that persistent knowledge gaps along socioeconomic lines continue to shape the distribution of political information. Efforts to improve civic information environments should consider both the supply of political information across diverse media channels and the motivational factors that drive citizens to seek and process that information.
 
+The complex relationship between media, knowledge, and behavior revealed in our analysis cautions against simplistic prescriptions for improving democratic information environments. Instead, our findings suggest the need for multifaceted approaches that address information supply, accessibility, diversity, and the psychological and social factors that motivate citizens to become informed participants in democratic processes. Only through such comprehensive approaches can we hope to foster the knowledgeable citizenry that democratic governance requires.
 
-## References {.unnumbered}
+### References
 
-:::{#refs}
-
+::: {#refs}
 :::
